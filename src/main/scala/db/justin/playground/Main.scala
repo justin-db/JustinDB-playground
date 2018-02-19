@@ -16,5 +16,7 @@ object Main {
     implicit val cluster = Cluster(actorSystem)
 
     actorSystem.actorOf(Props[PingBot], "pingbot")
+    actorSystem.actorOf(Props[EventSubscriberLogger], "EventSubscriberLogger")
+
   }
 }
