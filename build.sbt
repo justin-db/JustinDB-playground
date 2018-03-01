@@ -48,7 +48,9 @@ lazy val root = project.in(file("."))
       "org.scalatest" %% "scalatest" % "3.0.1" % Test,
       library.akkaSfl4j,
       library.logback,
-      library.scalaLogging
+      library.scalaLogging,
+      "com.lightbend.akka.management" %% "akka-management"              % "0.10.0",
+      "com.lightbend.akka.management" %% "akka-management-cluster-http" % "0.10.0"
     ),
     fork in run := true,
     // disable parallel tests
@@ -62,18 +64,19 @@ lazy val root = project.in(file("."))
 
 lazy val library = new {
   object Version {
-    final val crjdt       = "0.0.7"
-    final val akkaVersion = "2.5.8"
-    final val scalaLogging       = "3.7.2"
-    final val logback            = "1.2.3"
+    final val crjdt        = "0.0.7"
+    final val akkaVersion  = "2.5.8"
+    final val scalaLogging = "3.7.2"
+    final val logback      = "1.2.3"
+
   }
   val crjdt                = "eu.timepit"        %% "crjdt-core"              % Version.crjdt
   val crjdtCirce           = "eu.timepit"        %% "crjdt-circe"             % Version.crjdt
 
   // logging
-  val akkaSfl4j            = "com.typesafe.akka"          %% "akka-slf4j"               % Version.akkaVersion
-  val logback              = "ch.qos.logback"              % "logback-classic"          % Version.logback
-  val scalaLogging         = "com.typesafe.scala-logging" %% "scala-logging"            % Version.scalaLogging
+  val akkaSfl4j            = "com.typesafe.akka"          %% "akka-slf4j"      % Version.akkaVersion
+  val logback              = "ch.qos.logback"              % "logback-classic" % Version.logback
+  val scalaLogging         = "com.typesafe.scala-logging" %% "scala-logging"   % Version.scalaLogging
 
   val akkaActor            = "com.typesafe.akka" %% "akka-actor"              % Version.akkaVersion
   val akkaRemote           = "com.typesafe.akka" %% "akka-remote"             % Version.akkaVersion
