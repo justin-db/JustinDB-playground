@@ -23,6 +23,10 @@
               {
                 "containerPort": 2551,
                 "name": "akka-remote"
+              },
+              {
+                "containerPort": 9000,
+                "name": "http"
               }
             ],
             "env": [

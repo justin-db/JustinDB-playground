@@ -45,6 +45,8 @@ lazy val root = project.in(file("."))
       library.akkaCluster,
       library.akkaDistributedData,
       library.akkaMultiNodeTestkit,
+      library.akkaHttp,
+      library.akkaHttpSprayJson,
       "org.scalatest" %% "scalatest" % "3.0.1" % Test,
       library.akkaSfl4j,
       library.logback,
@@ -66,13 +68,13 @@ lazy val library = new {
   object Version {
     final val crjdt        = "0.0.7"
     final val akkaVersion  = "2.5.8"
+    final val akkaHttp     = "10.0.10"
     final val scalaLogging = "3.7.2"
     final val logback      = "1.2.3"
 
   }
-  val crjdt                = "eu.timepit"        %% "crjdt-core"              % Version.crjdt
-  val crjdtCirce           = "eu.timepit"        %% "crjdt-circe"             % Version.crjdt
-
+  val crjdt                = "eu.timepit"                 %% "crjdt-core"      % Version.crjdt
+  val crjdtCirce           = "eu.timepit"                 %% "crjdt-circe"     % Version.crjdt
   // logging
   val akkaSfl4j            = "com.typesafe.akka"          %% "akka-slf4j"      % Version.akkaVersion
   val logback              = "ch.qos.logback"              % "logback-classic" % Version.logback
@@ -83,4 +85,6 @@ lazy val library = new {
   val akkaCluster          = "com.typesafe.akka" %% "akka-cluster"            % Version.akkaVersion
   val akkaDistributedData  = "com.typesafe.akka" %% "akka-distributed-data"   % Version.akkaVersion
   val akkaMultiNodeTestkit = "com.typesafe.akka" %% "akka-multi-node-testkit" % Version.akkaVersion
+  val akkaHttp             = "com.typesafe.akka" %% "akka-http"               % Version.akkaHttp
+  val akkaHttpSprayJson    = "com.typesafe.akka" %% "akka-http-spray-json"    % Version.akkaHttp
 }

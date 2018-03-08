@@ -5,7 +5,7 @@
     "labels": {
       "app": "justindb"
     },
-    "name": "justindb"
+    "name": "justindb-akka-remote"
   },
   "spec": {
     "clusterIP": "None",
