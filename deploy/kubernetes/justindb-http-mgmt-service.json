@@ -13,7 +13,7 @@
       {
         "port": 19999,
         "protocol": "TCP",
-        "targetPort": "akka-http-mgmt"
+        "targetPort": "akka-mgmt-http"
       }
     ],
     "selector": {

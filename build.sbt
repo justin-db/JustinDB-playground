@@ -12,20 +12,16 @@ maintainer.in(Docker) := "Mateusz Maciaszek"
 dockerRepository      := Some("justindb")
 dockerUpdateLatest    := true
 dockerBaseImage       := "local/openjdk-jre-8-bash"
-dockerEntrypoint      ++= Seq(
+dockerEntrypoint ++= Seq(
   """-Dakka.remote.netty.tcp.hostname="$(eval "echo $AKKA_REMOTING_BIND_HOST")"""",
-  """-Dakka.remote.netty.tcp.port="$AKKA_REMOTING_BIND_PORT"""",
-  """-Djustin.kubernetes-hostname="$(eval "echo $JUSTINDB_NODE_ID_NAME")"""",
-  """$(IFS=','; I=0; for NODE in $AKKA_SEED_NODES; do echo "-Dakka.cluster.seed-nodes.$I=akka.tcp://ClusterSystem@$NODE"; I=$(expr $I + 1); done)""",
-  "-Dakka.io.dns.resolver=async-dns",
-  "-Dakka.io.dns.async-dns.resolve-srv=true",
-  "-Dakka.io.dns.async-dns.resolv-conf=on"
+  """-Dakka.management.http.hostname="$(eval "echo $AKKA_REMOTING_BIND_HOST")""""
 )
 dockerCommands :=
   dockerCommands.value.flatMap {
     case ExecCmd("ENTRYPOINT", args @ _*) => Seq(Cmd("ENTRYPOINT", args.mkString(" ")))
     case v => Seq(v)
   }
+dockerCommands += Cmd("USER", "root")
 
 cancelable := true
 
@@ -51,8 +47,10 @@ lazy val root = project.in(file("."))
       library.akkaSfl4j,
       library.logback,
       library.scalaLogging,
-      "com.lightbend.akka.management" %% "akka-management"              % "0.10.0",
-      "com.lightbend.akka.management" %% "akka-management-cluster-http" % "0.10.0"
+      "com.lightbend.akka.management" %% "akka-management"                   % "0.10.0",
+      "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "0.10.0",
+      "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "0.10.0",
+      "com.lightbend.akka.management" %% "akka-management-cluster-http"      % "0.10.0"
     ),
     fork in run := true,
     // disable parallel tests

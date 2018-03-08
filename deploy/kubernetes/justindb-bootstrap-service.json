@@ -5,16 +5,15 @@
     "labels": {
       "app": "justindb"
     },
-    "name": "justindb-akka-remote"
+    "name": "justindb-bootstrap"
   },
   "spec": {
     "clusterIP": "None",
     "ports": [
       {
-        "port": 2551,
+        "port": 8558,
         "protocol": "TCP",
-        "targetPort": 2551,
-        "name": "akka-remote"
+        "targetPort": "bootstrap"
       }
     ],
     "selector": {

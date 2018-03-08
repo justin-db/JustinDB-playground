@@ -1,0 +1,73 @@
+{
+  "apiVersion": "apps/v1beta1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "justindb"
+  },
+  "spec": {
+    "replicas": 3,
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "justindb",
+          "actorSystemName": "justindb"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "justindb",
+            "image": "justindb/justindb-playground:latest",
+            "imagePullPolicy": "Always",
+            "ports": [
+              {
+                "containerPort": 2551,
+                "name": "remoting",
+                "protocol": "TCP"
+              },
+              {
+                "containerPort": 9000,
+                "name": "http",
+                "protocol": "TCP"
+              },
+              {
+                "containerPort": 8558,
+                "name": "bootstrap",
+                "protocol": "TCP"
+              },
+              {
+                "containerPort": 19999,
+                "name": "akka-mgmt-http",
+                "protocol": "TCP"
+              }
+            ],
+            "env": [
+              {
+                "name": "HOST_NAME",
+                "valueFrom": {
+                  "fieldRef": {
+                    "apiVersion" : "v1",
+                    "fieldPath": "status.podIP"
+                  }
+                }
+              }
+            ],
+            "readinessProbe": {
+              "tcpSocket": {
+                "port": 9000
+              },
+              "initialDelaySeconds": 40,
+              "timeoutSeconds": 120
+            },
+            "livenessProbe": {
+              "tcpSocket": {
+                "port": 19999
+              },
+              "initialDelaySeconds": 10
+            }
+          }
+        ]
+      }
+    }
+  }
+}
