@@ -5,7 +5,7 @@
     "labels": {
       "app": "justindb"
     },
-    "name": "justindb-bootstrap"
+    "name": "justindb-service"
   },
   "spec": {
     "clusterIP": "None",
