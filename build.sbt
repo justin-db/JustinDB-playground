@@ -49,7 +49,7 @@ lazy val root = project.in(file("."))
       library.scalaLogging,
       "com.lightbend.akka.management" %% "akka-management"                   % "0.10.0",
       "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "0.10.0",
-      "com.lightbend.akka.discovery" %% "akka-discovery-kubernetes-api" % "0.10.0",
+      "com.lightbend.akka.discovery"  %% "akka-discovery-kubernetes-api"     % "0.10.0",
       "com.lightbend.akka.management" %% "akka-management-cluster-http"      % "0.10.0"
     ),
     fork in run := true,

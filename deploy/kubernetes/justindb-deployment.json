@@ -43,11 +43,18 @@
             ],
             "env": [
               {
-                "name": "HOST_NAME",
+                "name": "MY_NODE_NAME",
                 "valueFrom": {
                   "fieldRef": {
                     "apiVersion" : "v1",
                     "fieldPath": "status.podIP"
+                  }
+                },
+                "name": "POD_ZONE",
+                "valueFrom": {
+                  "fieldRef": {
+                    "apiVersion" : "v1",
+                    "fieldPath": "spec.nodeName"
                   }
                 }
               }
