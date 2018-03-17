@@ -9,7 +9,7 @@ import akka.management.cluster.bootstrap.ClusterBootstrap
 import akka.stream.{ActorMaterializer, Materializer}
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.StrictLogging
-import db.justin.playground.http.HealthCheckRouter
+import db.justin.playground.http.{GetPutMessagesRouter, HealthCheckRouter}
 
 import scala.concurrent.ExecutionContext
 
@@ -18,18 +18,20 @@ object Main extends App with StrictLogging {
   private[this] val config = ConfigFactory
     .parseString(s"akka.cluster.multi-data-center.self-data-center = ${sys.env("POD_ZONE")}")
     .withFallback(ConfigFactory.load())
+
   implicit val actorSystem: ActorSystem   = ActorSystem("justindb", config)
   implicit val cluster: Cluster           = Cluster(actorSystem)
   implicit val executor: ExecutionContext = actorSystem.dispatcher
   implicit val materializer: Materializer = ActorMaterializer()
 
-  actorSystem.actorOf(KeyValueCache.props)
+  val kvActorRef = actorSystem.actorOf(KeyValueCache.props)
 
   AkkaManagement(actorSystem).start()
   ClusterBootstrap(actorSystem).start()
 
   val routes = logRequestResult(actorSystem.name) {
-    new HealthCheckRouter().routes
+    new HealthCheckRouter().routes ~
+    new GetPutMessagesRouter(kvActorRef).routes
   }
   Http()
     .bindAndHandle(routes, "0.0.0.0", 9000)
