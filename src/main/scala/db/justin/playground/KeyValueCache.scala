@@ -9,9 +9,9 @@ object KeyValueCache {
 
   def props: Props = Props[KeyValueCache]
 
-  case class PutInCache(key: String, value: Any)
+  case class PutInCache(key: String, value: Int)
   case class GetFromCache(key: String)
-  case class Cached(key: String, valueOpt: Option[Any])
+  case class Cached(key: String, valueOpt: Option[Set[Int]])
   case class Evict(key: String)
 }
 
@@ -20,12 +20,17 @@ class KeyValueCache extends Actor with ActorLogging {
   implicit val cluster = Cluster(context.system)
   val replicator = DistributedData(context.system).replicator
 
-  def dataKey(key: String): LWWMapKey[String, Any] = LWWMapKey("cache-" + scala.math.abs(key.hashCode() % 100))
+  def dataKey(key: String): LWWMapKey[String, Set[Int]] = LWWMapKey("cache-" + scala.math.abs(key.hashCode() % 100))
 
   override def receive: Receive = {
     // put
     case KeyValueCache.PutInCache(key, value) =>
-     replicator ! Replicator.Update(dataKey(key), LWWMap(), WriteLocal)(_ + (key -> value))
+     replicator ! Replicator.Update(dataKey(key), LWWMap(), WriteLocal) {
+       data =>
+         val modifiedData = data.get(key).map(_.asInstanceOf[Set[Int]])
+         val updatedData = modifiedData.map(Set(value) ++ _).getOrElse(Set(value))
+         data + (key -> updatedData)
+     }
 
     // get
     case KeyValueCache.GetFromCache(key) =>
@@ -34,7 +39,7 @@ class KeyValueCache extends Actor with ActorLogging {
       replyTo ! KeyValueCache.Cached(key, None)
     case g @ Replicator.GetSuccess(LWWMapKey(_), Some((key: String, replyTo: ActorRef))) =>
       g.dataValue match {
-        case data: LWWMap[_, _] => data.asInstanceOf[LWWMap[String, Any]].get(key) match {
+        case data: LWWMap[_, _] => data.asInstanceOf[LWWMap[String, Set[Int]]].get(key) match {
           case Some(value) => replyTo ! KeyValueCache.Cached(key, Some(value))
           case None        => replyTo ! KeyValueCache.Cached(key, None)
         }

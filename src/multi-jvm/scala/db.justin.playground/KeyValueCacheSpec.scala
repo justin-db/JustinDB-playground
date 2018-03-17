@@ -59,13 +59,13 @@ class KeyValueCacheSpec extends MultiNodeSpec(KeyValueCacheSpec) with STMultiNod
 
     "replicate cached entry" in within(10.seconds) {
       runOn(node1) {
-        kvCache ! KeyValueCache.PutInCache("key", "value")
+        kvCache ! KeyValueCache.PutInCache("key", 1)
       }
 
       awaitAssert {
         val testProbe = TestProbe()
         kvCache.tell(KeyValueCache.GetFromCache("key"), testProbe.ref)
-        testProbe.expectMsg(KeyValueCache.Cached("key", Some("value")))
+        testProbe.expectMsg(KeyValueCache.Cached("key", Some(Set(1))))
       }
 
       enterBarrier("after-2")
@@ -73,14 +73,14 @@ class KeyValueCacheSpec extends MultiNodeSpec(KeyValueCacheSpec) with STMultiNod
 
     "replicate updated cache entry" in within(10.seconds) {
       runOn(node1) {
-        kvCache ! KeyValueCache.PutInCache("key-1", "A")
-        kvCache ! KeyValueCache.PutInCache("key-1", "B")
+        kvCache ! KeyValueCache.PutInCache("key-1", 1)
+        kvCache ! KeyValueCache.PutInCache("key-1", 2)
       }
 
       awaitAssert {
         val testProbe = TestProbe()
         kvCache.tell(KeyValueCache.GetFromCache("key-1"), testProbe.ref)
-        testProbe.expectMsg(KeyValueCache.Cached("key-1", Some("B")))
+        testProbe.expectMsg(KeyValueCache.Cached("key-1", Some(Set(1,2))))
       }
 
       enterBarrier("after-3")
@@ -88,13 +88,13 @@ class KeyValueCacheSpec extends MultiNodeSpec(KeyValueCacheSpec) with STMultiNod
 
     "replicate evicted entry" in within(15.seconds) {
       runOn(node1) {
-        kvCache ! KeyValueCache.PutInCache("key-2", "A")
+        kvCache ! KeyValueCache.PutInCache("key-2", 1)
       }
 
       awaitAssert {
         val testProbe = TestProbe()
         kvCache.tell(KeyValueCache.GetFromCache("key-2"), testProbe.ref)
-        testProbe.expectMsg(KeyValueCache.Cached("key-2", Some("A")))
+        testProbe.expectMsg(KeyValueCache.Cached("key-2", Some(Set(1))))
       }
 
       runOn(node3) {
